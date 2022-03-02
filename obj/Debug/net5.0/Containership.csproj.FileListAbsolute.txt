@@ -1,0 +1,16 @@
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\bin\Debug\net5.0\Containership.exe
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\bin\Debug\net5.0\Containership.deps.json
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\bin\Debug\net5.0\Containership.runtimeconfig.json
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\bin\Debug\net5.0\Containership.runtimeconfig.dev.json
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\bin\Debug\net5.0\Containership.dll
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\bin\Debug\net5.0\ref\Containership.dll
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\bin\Debug\net5.0\Containership.pdb
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\obj\Debug\net5.0\Containership.csprojAssemblyReference.cache
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\obj\Debug\net5.0\Containership.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\obj\Debug\net5.0\Containership.AssemblyInfoInputs.cache
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\obj\Debug\net5.0\Containership.AssemblyInfo.cs
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\obj\Debug\net5.0\Containership.csproj.CoreCompileInputs.cache
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\obj\Debug\net5.0\Containership.dll
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\obj\Debug\net5.0\ref\Containership.dll
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\obj\Debug\net5.0\Containership.pdb
+C:\Users\Tom\Desktop\WebAppKR\WebApplicationFontys\Containership\obj\Debug\net5.0\Containership.genruntimeconfig.cache
