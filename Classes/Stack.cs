@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using Containership.Enums;
 
@@ -60,6 +61,16 @@ namespace Containership.classes
                 return false;
             }
             return true;
+        }
+
+        public void ReArrange()
+        {
+            if (_containers.Count != 0)
+            {
+                var placeholder = _containers[_containers.Count - 1];
+                _containers[_containers.Count - 1] = _containers[0];
+                _containers[0] = placeholder;
+            }
         }
         
         public IReadOnlyList<Container> GetContainers()

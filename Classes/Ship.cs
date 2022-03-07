@@ -7,21 +7,23 @@ namespace Containership.classes
 {
     public class Ship
     {
+        public int Width { get; private set; }
+        
         private int _minLoad;
         private int _maxWeightDiff;
+        private int _totalWeight = 0;
         private int _maxLoad;
         private int _length;
-        private int _width;
         private List<StackRow> _load = new();
         private Dockyard _dockedAt;
-        private List<Container> NormalContainers = new();
-        private List<Container> CooledContainers = new();
-        private List<Container> ValuableContainers = new();
-        private List<Container> CooledValuableContainers = new();
+        private List<Container> _normalContainers = new();
+        private List<Container> _cooledContainers = new();
+        private List<Container> _valuableContainers = new();
+        private List<Container> _cooledValuableContainers = new();
         
         public void SetSize(int length , int width)
         { 
-            _width = width;
+            Width = width;
             _length = length;
             for (var i = 0; i < length; i++)
             {
@@ -35,12 +37,7 @@ namespace Containership.classes
             _maxWeightDiff = _maxLoad / 5;
             _minLoad = _maxLoad / 2;
         }
-
-        public void PlaceContainer(Container container, int lengthIndex, int widthIndex)
-        {
-            _load[lengthIndex].GetStacks()[widthIndex].Add(container);
-        }
-
+        
         public void Dock(Dockyard dockyard)
         {
             _dockedAt = dockyard;
@@ -60,17 +57,22 @@ namespace Containership.classes
         {
             //todo make it impossible to load too much weight
             PutCooledValuableContainers();
+            //todo put valuable containers per length instead of per row
             PutValuableContainers();
             PutCooledContainers();
             //todo try to place lowest weight cooled containers if some are left
             PutNormalContainers();
             //todo try to place lowest weight normal containers if some are left
             CheckBalance();
-            
-            Console.WriteLine($"Normal containers left: {_dockedAt.GetNormalContainers().Count}         Normal containers placed: {NormalContainers.Count}");
-            Console.WriteLine($"Cooled containers left: {_dockedAt.GetCooledContainers().Count}         Cooled containers placed: {CooledContainers.Count}");
-            Console.WriteLine($"Valuable containers left: {_dockedAt.GetValuableContainers().Count}         Valuable containers placed: {ValuableContainers.Count}");
-            Console.WriteLine($"CooledValuable containers left: {_dockedAt.GetCooledValuableContainers().Count}         CooledValuable containers placed: {CooledValuableContainers.Count}");
+            //todo swap left and right most containers in all arrays
+            foreach (var stackRow in _load)
+            {
+                stackRow.ReArrange();
+            }
+            Console.WriteLine($"Normal containers left: {_dockedAt.GetNormalContainers().Count}         Normal containers placed: {_normalContainers.Count}");
+            Console.WriteLine($"Cooled containers left: {_dockedAt.GetCooledContainers().Count}         Cooled containers placed: {_cooledContainers.Count}");
+            Console.WriteLine($"Valuable containers left: {_dockedAt.GetValuableContainers().Count}         Valuable containers placed: {_valuableContainers.Count}");
+            Console.WriteLine($"CooledValuable containers left: {_dockedAt.GetCooledValuableContainers().Count}         CooledValuable containers placed: {_cooledValuableContainers.Count}");
         }
 
        private void CheckBalance()
@@ -83,11 +85,11 @@ namespace Containership.classes
                 foreach (var stack in stackRow.GetStacks())
                 {
                     totalWeight += stack.Weight;
-                    if ((stackRow.GetStackIndex(stack) + 1) * 2 < _width + 1)
+                    if ((stackRow.GetStackIndex(stack) + 1) * 2 < Width + 1)
                     {
                         leftWeight += stack.Weight;
                     } 
-                    else if ((stackRow.GetStackIndex(stack) + 1) * 2 > _width + 1)
+                    else if ((stackRow.GetStackIndex(stack) + 1) * 2 > Width + 1)
                     {
                         rightWeight += stack.Weight;
                     }
@@ -119,24 +121,44 @@ namespace Containership.classes
         }
         
         private void PutCooledValuableContainers()
-        {
+        { 
+            var end = false;
             var placedCounter = 0;
             for (var i = 0; _dockedAt.GetCooledValuableContainers().Count > 0; i++)
             {
                 var container = _dockedAt.GetCooledValuableContainers()[0];
+                if (_totalWeight + container.Weight > _maxLoad)
+                {
+                    end = true;
+                    foreach (var item in _dockedAt.GetCooledValuableContainers())
+                    {
+                        if (_totalWeight + item.Weight <= _maxLoad)
+                        {
+                            container = item;
+                            end = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (end)
+                {
+                    Console.WriteLine("Max load reached");
+                    break;
+                }
                 var widthIndex = i;
                 
                 // lower x to fit within index range
-                for (; widthIndex >= _width;)
+                for (; widthIndex >= Width;)
                 {
-                    widthIndex -= _width;
+                    widthIndex -= Width;
                     //keep track of height
                 }
 
                 // uneven gets put inwards from the right
                 if (widthIndex != 0 && widthIndex % 2 != 0)
                 {
-                    widthIndex = _width - (widthIndex + 1) / 2;
+                    widthIndex = Width - (widthIndex + 1) / 2;
                 }
 
                 // even gets put inwards from the left
@@ -148,7 +170,7 @@ namespace Containership.classes
                 //check if the spot is free
                 if (FreeSpot(0, widthIndex, 0))
                 {
-                    CooledValuableContainers.Add(container);
+                    _cooledValuableContainers.Add(container);
                     _load[0].GetStacks()[widthIndex].Add(container);
                     _dockedAt.RemoveCooledValuableContainer(container);
                     //keep track of placed containers
@@ -156,7 +178,7 @@ namespace Containership.classes
                 }
 
                 //stop infinite recursion
-                if (placedCounter == _width)
+                if (placedCounter == Width)
                 {
                     if (_dockedAt.GetCooledValuableContainers().Count != 0)
                     {
@@ -168,27 +190,45 @@ namespace Containership.classes
         }
         
         private void PutValuableContainers()
-        {
+        { 
+            var end = false;
             var rowIndex = 0;
             var unavailableNr = 0;
             for (var i = 0; _dockedAt.GetValuableContainers().Count > 0; i++)
             {
-                
-
-
-                    var container = _dockedAt.GetValuableContainers()[0];
+                var container = _dockedAt.GetValuableContainers()[0];
                     var widthIndex = i;
 
-                    // lower x to fit within index range
-                    for (; widthIndex >= _width;)
+                    if (_totalWeight + container.Weight > _maxLoad)
                     {
-                        widthIndex -= _width;
+                        end = true;
+                        foreach (var item in _dockedAt.GetValuableContainers())
+                        {
+                            if (_totalWeight + item.Weight <= _maxLoad)
+                            {
+                                container = item;
+                                end = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (end)
+                    {
+                        Console.WriteLine("Max load reached");
+                        break;
+                    }
+                    
+                    // lower x to fit within index range
+                    for (; widthIndex >= Width;)
+                    {
+                        widthIndex -= Width;
                     }
 
                     // uneven gets put inwards from the right
                     if (widthIndex != 0 && widthIndex % 2 != 0)
                     {
-                        widthIndex = _width - (widthIndex + 1) / 2;
+                        widthIndex = Width - (widthIndex + 1) / 2;
                     }
 
                     // even gets put inwards from the left
@@ -200,7 +240,7 @@ namespace Containership.classes
                     //check if the spot is free
                     if (FreeSpot(rowIndex, widthIndex, 0))
                     {
-                        ValuableContainers.Add(container);
+                        _valuableContainers.Add(container);
                         _load[rowIndex].GetStacks()[widthIndex].Add(container);
                         _dockedAt.RemoveValuableContainer(container);
                         //keep track of nr of unavailable spots
@@ -217,7 +257,7 @@ namespace Containership.classes
 
 
                     //keep track of row
-                    if (unavailableNr >= _width * (rowIndex + 1))
+                    if (unavailableNr >= Width * (rowIndex + 1))
                     {
                         rowIndex++;
                     }
@@ -233,18 +273,40 @@ namespace Containership.classes
         }
         
         private void PutCooledContainers()
-        {
+        { 
+            var end = false;
             var takenCounter = 0;
             for (var i = 0; _dockedAt.GetCooledContainers().Count > 0; i++)
             {
+               
                 var container = _dockedAt.GetCooledContainers()[0];
                 var widthIndex = i;
 
+                if (_totalWeight + container.Weight > _maxLoad)
+                {
+                    end = true;
+                    foreach (var item in _dockedAt.GetCooledContainers())
+                    {
+                        if (_totalWeight + item.Weight <= _maxLoad)
+                        {
+                            container = item;
+                            end = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (end)
+                {
+                    Console.WriteLine("Max load reached");
+                    break;
+                }
+                
                 var heightIndex = 0;
                 // lower x to fit within index range
-                for (; widthIndex >= _width;)
+                for (; widthIndex >= Width;)
                 {
-                    widthIndex -= _width;
+                    widthIndex -= Width;
                     //keep track of height
                     heightIndex++;
                 }
@@ -252,7 +314,7 @@ namespace Containership.classes
                 // uneven gets put inwards from the right
                 if (widthIndex != 0 && widthIndex % 2 != 0)
                 {
-                    widthIndex = _width - (widthIndex + 1) / 2;
+                    widthIndex = Width - (widthIndex + 1) / 2;
                 }
 
                 // even gets put inwards from the left
@@ -264,7 +326,7 @@ namespace Containership.classes
                 //check if the spot is free
                 if (FreeSpot(0, widthIndex, heightIndex) && _load[0].GetStacks()[widthIndex].CanCarry(container.Weight))
                 {
-                    CooledContainers.Add(container);
+                    _cooledContainers.Add(container);
                     _load[0].GetStacks()[widthIndex].Add(container);
                     _dockedAt.RemoveCooledContainer(container);
                     //
@@ -277,7 +339,7 @@ namespace Containership.classes
                 }
 
                 //stop infinite recursion
-                if (takenCounter > _width)
+                if (takenCounter > Width)
                 {
                     Console.WriteLine("Too many cooled containers!");
                     break;
@@ -303,7 +365,7 @@ namespace Containership.classes
         
         private void PutNormalContainers()
         {
-            //loop through heights until containers are out or no available spots are left
+           //loop through heights until containers are out or no available spots are left
             for (var heightIndex = 0; _dockedAt.GetNormalContainers().Count > 0; heightIndex++)
             {
                 if (CanPlaceWeight(_dockedAt.GetNormalContainers()[0].Weight))
@@ -311,17 +373,18 @@ namespace Containership.classes
                     //keep track of available spots in layer
                     var layerTakenCounter = 0;
                     //loop through each row of the ship
-                    for (var lengthIndex = 0; layerTakenCounter < _width * _length &&  _dockedAt.GetNormalContainers().Count > 0; lengthIndex++)
+                    for (var lengthIndex = 0; layerTakenCounter < Width * _length &&  _dockedAt.GetNormalContainers().Count > 0; lengthIndex++)
                     {
                         //loop through each container in a row
-                        for (var i = 0; i < _width &&  _dockedAt.GetNormalContainers().Count > 0; i++)
+                        for (var i = 0; i < Width &&  _dockedAt.GetNormalContainers().Count > 0; i++)
                         {
                             var container = _dockedAt.GetNormalContainers()[0];
                             var widthIndex = i;
+                            
                             // uneven gets put inwards from the right
                             if (widthIndex != 0 && widthIndex % 2 != 0)
                             {
-                                widthIndex = _width - (widthIndex + 1) / 2;
+                                widthIndex = Width - (widthIndex + 1) / 2;
                             }
 
                             // even gets put inwards from the left
@@ -334,20 +397,44 @@ namespace Containership.classes
                             if (FreeSpot(lengthIndex, widthIndex, heightIndex) &&
                                 _load[lengthIndex].GetStacks()[widthIndex].CanCarry(container.Weight))
                             {
-                                NormalContainers.Add(container);
+                                _normalContainers.Add(container);
                                 _load[lengthIndex].GetStacks()[widthIndex].Add(container);
                                 _dockedAt.RemoveNormalContainer(container);
                             }
                         }
 
-                        layerTakenCounter += _width;
+                        layerTakenCounter += Width;
                     }
                 }
                 else
                 {
+                    Console.WriteLine("Max load reached");
                     break;
                 }
             }
+        }
+
+        public List<List<Container>> GetLayer(int layer)
+        {
+            var returnList = new List<List<Container>>();
+            var i = 0;
+            foreach (var stackRow in _load)
+            {
+                returnList.Add(new List<Container>());
+                foreach (var stack in stackRow.GetStacks())
+                {
+                    if (stack.GetContainers().Count > layer)
+                    {
+                        returnList[i].Add(stack.GetContainers()[layer]);
+                    }
+                    else
+                    {
+                        returnList[i].Add(new Container(false));
+                    }
+                }
+                i++;
+            }
+            return returnList;
         }
     }
 }

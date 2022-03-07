@@ -19,6 +19,14 @@ namespace Containership.classes
             return Stacks;
         }
 
+        public void ReArrange()
+        {
+            foreach (var stack in Stacks)
+            {
+                stack.ReArrange();
+            }
+        }
+        
         public int GetStackIndex(Stack stack)
         {
             return Stacks.IndexOf(stack);
