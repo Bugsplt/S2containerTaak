@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-namespace Containership.classes
+namespace Containership.Classes
 {
     public class StackRow
     {
@@ -29,6 +30,10 @@ namespace Containership.classes
         
         public int GetStackIndex(Stack stack)
         {
+            if (!Stacks.Contains(stack))
+            {
+                throw new ArgumentException("Stack not found");
+            }
             return Stacks.IndexOf(stack);
         }
     }

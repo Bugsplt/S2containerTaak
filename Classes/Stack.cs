@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
+﻿using System.Collections.Generic;
 using Containership.Enums;
 
-namespace Containership.classes
+namespace Containership.Classes
 {
     public class Stack
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Containership.Enums;
 
-namespace Containership.classes
+namespace Containership.Classes
 {
     public class Container
     {
@@ -32,6 +32,8 @@ namespace Containership.classes
             }
             Weight = _random.Next(_minWeight, _maxWeight + 1);
         }
+        
+        
         
         public Container(bool isEmpty)
         {

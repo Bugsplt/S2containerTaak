@@ -2,7 +2,7 @@
 using System.Linq;
 using Containership.Enums;
 
-namespace Containership.classes
+namespace Containership.Classes
 {
     public class Dockyard
     {
