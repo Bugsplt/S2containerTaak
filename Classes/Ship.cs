@@ -8,6 +8,7 @@ namespace Containership.Classes
         public int Width { get; private set; }
         public int Length { get; private set; }
          
+        
         private int _minLoad;
         private int _maxWeightDiff;
         private int _totalWeight = 0;
@@ -19,7 +20,7 @@ namespace Containership.Classes
         private List<Container> _valuableContainers = new();
         private List<Container> _cooledValuableContainers = new();
 
-
+        
         public IReadOnlyList<List<Container>> GetLayer(int layer)
         {
             var returnList = new List<List<Container>>();
@@ -47,7 +48,24 @@ namespace Containership.Classes
         {
             return _load;
         }
+
         
+        public Ship()
+        {
+            
+        }
+
+        public Ship(int width, int length, int maxLoad, List<StackRow> load)
+        {
+            Width = width;
+            Length = length;
+            _maxLoad = maxLoad;
+            _maxWeightDiff = _maxLoad / 5;
+            _minLoad = _maxLoad / 2;
+            _load = load;
+        }
+            
+            
         public void SetSize(int length , int width)
         {
             if (length < 1)

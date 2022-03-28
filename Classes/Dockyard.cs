@@ -11,6 +11,7 @@ namespace Containership.Classes
         private List<Container> _valuableContainers = new();
         private List<Container> _cooledValuableContainers = new();
 
+        
         public IReadOnlyList<Container> GetNormalContainers()
         {
             return _normalContainers;
@@ -27,7 +28,21 @@ namespace Containership.Classes
         {
             return _cooledValuableContainers;
         }
-
+        
+        
+        public Dockyard()
+        {
+            
+        }
+        public Dockyard(List<Container> normalContainers, List<Container> cooledContainers, List<Container> valuableContainers, List<Container> cooledValuableContainers)
+        {
+            _normalContainers = normalContainers;
+            _cooledContainers = cooledContainers;
+            _valuableContainers = valuableContainers;
+            _cooledValuableContainers = cooledValuableContainers;
+        }
+        
+        
         public void RemoveNormalContainer(Container container)
         {
             _normalContainers.Remove(container);
@@ -55,6 +70,7 @@ namespace Containership.Classes
             SortWeights();
         }
 
+        
         private void SortWeights()
         {
             _normalContainers = _normalContainers.OrderBy(x => -x.Weight).ToList();

@@ -15,6 +15,11 @@ namespace Containership.Classes
             }
         }
 
+        public StackRow(List<Stack> stacks)
+        {
+            Stacks = stacks;
+        }
+        
         public IReadOnlyList<Stack> GetStacks()
         {
             return Stacks;

@@ -8,7 +8,24 @@ namespace Containership.Classes
         private List<Container> _containers = new();
         private int _maxCarryWeight = 120000;
         private bool _available = true;
+
+
+        public Stack()
+        {
+            
+        }
+
+        public Stack(List<Container> containers, int maxCarryWeight, bool available)
+        {
+            _containers = containers;
+            _maxCarryWeight = maxCarryWeight;
+            _available = available;
+        }
+        
         public int Weight { get; private set; }
+        
+        
+        
         public void Add(Container container)
         {
             _containers.Add(container);
@@ -70,6 +87,8 @@ namespace Containership.Classes
                 _containers[0] = placeholder;
             }
         }
+        
+        
         
         public IReadOnlyList<Container> GetContainers()
         {

@@ -32,8 +32,12 @@ namespace Containership.Classes
             }
             Weight = _random.Next(_minWeight, _maxWeight + 1);
         }
-        
-        
+
+        public Container(int weight, ContainerType type)
+        {
+            Weight = weight;
+            Type = type;
+        }
         
         public Container(bool isEmpty)
         {
